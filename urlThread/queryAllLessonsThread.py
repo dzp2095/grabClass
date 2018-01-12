@@ -231,8 +231,8 @@ class queryAllLessonsThread(QtCore.QThread):
                         "td:nth-child(7)").text(),
                     "numHaveChosed": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
                         "td:nth-child(8)").text(),
-                    "credit": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
-                        "td:nth-child(11)").text(),
+                    "credit": pqHtmlData("#bxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(10)").text(),
+
                 }
                 bxkLessonList.append(lessInfo)
         # 补修课选课信息查询完毕
