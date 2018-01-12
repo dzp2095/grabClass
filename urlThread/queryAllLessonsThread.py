@@ -187,5 +187,58 @@ class queryAllLessonsThread(QtCore.QThread):
                 gxkLessonList.append(lessInfo)
         self.getLessonsSignal.emit(gxkLessonList)
         lessonDatabase.updateLessons(self.userNumber,gxkLessonList)
+        
+        bxkLessonList = list()
+        bxkLessonList.append("补修课选课")
+        # 读取补修课选课信息
+        url = "http://202.114.90.180/Course/" + XKUrlDic["补修课选课"]
+        postData = {
+            "_": time.time()
+        }
+        postData = urllib.parse.urlencode(postData).encode()
+        op = self.opener.open(url, postData)
+        data = op.read()
+        pqHtmlData = PyQuery(data.decode())
+        # 分析网页得到课程,依次打开得到具体课程信息
+        lessonTypeNum = pqHtmlData(".treeFolder").children("li").length
+        infoList = [1] * lessonTypeNum
+        for i in range(lessonTypeNum):
+            XKurl = pqHtmlData(".treeFolder").children("li").eq(i).find("a").attr("href")
+            infoList[i] = {
+                "XKurl": XKurl
+            }
+        for i in range(lessonTypeNum):
+            # postData = urllib.parse.urlencode(postData).encode()
+            url = "http://202.114.90.180/Course/" + infoList[i]["XKurl"] + "&_=" + time.time().__str__()
+            op = self.opener.open(url)
+            data = op.read()
+            pqHtmlData = PyQuery(data.decode())
+            lessonNum = pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").length
+            baseUrl = pqHtmlData(".toolBar").children("li").eq(0).find("a").attr("href")
+            for j in range(lessonNum):
+                rel = pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).attr("rel")
+                pattern = "{suid_obj}"
+                url = re.sub(pattern, rel, baseUrl)
+                lessInfo = {
+                    "lessonName": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
+                        "td:nth-child(2)").text(),
+                    "url": url,
+                    "lessonTime": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
+                        "td:nth-child(4)").attr("title"),
+                    "teacher": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
+                        "td:nth-child(3) a").text(),
+                    "capacity": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
+                        "td:nth-child(7)").text(),
+                    "numHaveChosed": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
+                        "td:nth-child(8)").text(),
+                    "credit": pqHtmlData(".panel").eq(0).find(".table tbody").children("tr").eq(j).find(
+                        "td:nth-child(11)").text(),
+                }
+                bxkLessonList.append(lessInfo)
+        # 补修课选课信息查询完毕
+        self.getLessonsSignal.emit(bxkLessonList)
+        lessonDatabase.updateLessons(self.userNumber, bxkLessonList)
+
+        
         #线程工作完成，通知界面线程
         self.finishSignal.emit()
