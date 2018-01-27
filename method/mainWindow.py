@@ -38,13 +38,14 @@ class mainWindow(QtWidgets.QMainWindow,ui_mainWindow.Ui_MainWindow):
         self.setupUi(self)
         self.center()
         self.retranslateUi(self)
-        self.__initConnectAndOther__()
+        self.__initConnectAndOtherOperation__()
         self.hasInitQKThread=False
 
-    def __initConnectAndOther__(self):
+    def __initConnectAndOtherOperation__(self):
         self.treeWidgetPJInfo.setHeaderHidden(False)
         #初始化登录状态
         self.isLogin(False)
+        self.isLoginTag=False
         self.lineEditQueryLessons.setEnabled(True)
         #初始化用户信息
         self.getUsers()
@@ -64,6 +65,7 @@ class mainWindow(QtWidgets.QMainWindow,ui_mainWindow.Ui_MainWindow):
         self.btnLoadInMysql.clicked.connect(self.loadAllLessonsInDB)
         self.lineEditQueryLessons.returnPressed.connect(self.queryLessons)
         self.actionDeleteLessonData.triggered.connect(self.createLessonDataBase)
+        self.actionInitDatabase.triggered.connect(self.onActionInitDatabase)
 
     def OncomboBoxUsersIndexChange(self):
         userNumber = self.comboBoxUsers.currentText();
@@ -125,7 +127,7 @@ class mainWindow(QtWidgets.QMainWindow,ui_mainWindow.Ui_MainWindow):
             # 重新建表
             user.createUserTable()
             self.setupUi(self)
-            self.__initConnectAndOther__()
+            self.__initConnectAndOtherOperation__()
     #读取数据库中的用户信息
     def getUsers(self):
         self.comboBoxUsers.clear()
@@ -161,6 +163,7 @@ class mainWindow(QtWidgets.QMainWindow,ui_mainWindow.Ui_MainWindow):
         #获取用户输入
         userNumber=self.lineEditNumber.text()
         password=self.lineEditPassword.text()
+
         self.loginThread = LoginThread.LoginThread(self.opener,userNumber,password)
 
         #连接登录线程的完成信号和槽函数
@@ -190,6 +193,7 @@ class mainWindow(QtWidgets.QMainWindow,ui_mainWindow.Ui_MainWindow):
                 self.isLogin(False)
                 return
             # 登录成功
+            self.isLoginTag=True
             self.UserName = self.lineEditNumber.text()
             self.UserPassWord = self.lineEditPassword.text()
             self.isLogin(True)
@@ -442,6 +446,15 @@ class mainWindow(QtWidgets.QMainWindow,ui_mainWindow.Ui_MainWindow):
                 # 重新建表
                 lessonDatabase.createLessonTable(self.UserName)
                 self.setupUi(self)
-                self.__initConnectAndOther__()
+                self.__initConnectAndOtherOperation__()
         else:
             QMessageBox.information(self,"erroe","请正确输入您的用户名")
+
+    def onActionInitDatabase(self):
+        if self.isLoginTag:
+            lessonDatabase.createLessonTableIfNotExist(self.UserName)
+            user.createUserTableIfNotExist()
+            QMessageBox.information(self,"ok","初始化成功")
+
+        else:
+            QMessageBox.information(self,"erroe","请先登录")

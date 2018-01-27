@@ -1,27 +1,44 @@
 # -*- coding:utf-8 -*-
 
-import pymysql
-import configparser
+import sqlite3
 #课程数据库操作
 class lessonDatabase:
     #读取配置文件中的数据
-    cf=configparser.ConfigParser()
-    cf.read("classGrabConf.conf","utf-8")
-    databaseName=cf.get("database","databaseName")
-    host = cf.get("database","host")
-    port = cf.getint("database","port")
-    username = cf.get("database","username")
-    password = cf.get("database","password")
+
     @staticmethod
     #连接数据库
     def __connectdb():
         try:
-            conn = pymysql.connect(host=lessonDatabase.host,user=lessonDatabase.username
-                                  ,passwd=lessonDatabase.password,db=lessonDatabase.databaseName,port=lessonDatabase.port
-                                   ,charset='utf8')
+            conn = sqlite3.connect("grabClass.db")
             #创建一个数据库连接
             return conn
         except Exception:print("连接数据库失败！")
+    @staticmethod
+    #如果数据表不存在则重新建表
+    def createLessonTableIfNotExist(userNumber):
+        conn = lessonDatabase.__connectdb()
+        #得到表名
+        tableName="LessonsTable_"+userNumber
+        try:
+            # 使用 cursor() 方法创建一个游标对象 cursor
+            cursor = conn.cursor()
+            # 如果表已经存在则不建立
+            sql = """CREATE TABLE IF NOT EXISTS %s (
+                     TYPE VARCHAR(20),
+                     NAME  VARCHAR(50) ,
+                     URL  TEXT,
+                     TIME VARCHAR(100),
+                     TEACHER VARCHAR(50),
+                     CAPACITY SMALLINT,
+                     NUMHAVECHOSED SMALLINT,
+                     CREDIT FLOAT
+                      ) """%(tableName)
+            cursor.execute(sql)
+        except Exception:print("创建数据表失败！")
+        # 关闭数据库连接
+        finally:
+            conn.close()
+
     @staticmethod
     def createLessonTable(userNumber):
         conn = lessonDatabase.__connectdb()
@@ -144,14 +161,4 @@ class lessonDatabase:
             conn.rollback()
         finally:
             conn.close()
-            # lessInfo = {
-            #     "lessonName": pqHtmlData("#gxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(2)").text(),
-            #     "url": url,
-            #     "lessonTime": pqHtmlData("#gxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(4)").attr(
-            #         "title"),
-            #     "teacher": pqHtmlData("#gxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(3) a").text(),
-            #     "capacity": pqHtmlData("#gxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(6)").text(),
-            #     "numHaveChosed": pqHtmlData("#gxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(8)").text(),
-            #     "credit": pqHtmlData("#gxkxk_wxkc_tb tbody").children("tr").eq(j).find("td:nth-child(10)").text(),
-            # }
 

@@ -1,35 +1,35 @@
 # -*- coding:utf-8 -*-
-import pymysql
-import configparser
+import sqlite3
 #用户数据
 class user:
-    #读取配置文件中的数据
-    cf=configparser.ConfigParser()
-    cf.read("classGrabConf.conf","utf-8")
-    databaseName=cf.get("database","databaseName")
-    host = cf.get("database","host")
-    port = cf.getint("database","port")
-    username = cf.get("database","username")
-    password = cf.get("database","password")
-
-    # host = "localhost"
-    # port = 3306
-    # username = "root"
-    # password = "zzzxxx"
-    # databaseName =  "grab_class_db"
     @staticmethod
     #连接数据库
     def __connectdb():
         try:
-            conn = pymysql.connect(host=user.host,user=user.username
-                                  ,passwd=user.password,db=user.databaseName,port=user.port
-                                   ,charset='utf8')
+            conn = sqlite3.connect("grabClass.db")
             #创建一个数据库连接
             return conn
         except Exception:print("连接数据库失败！")
 
     @staticmethod
+    # 如果表不存在则创建表
+    def createUserTableIfNotExist():
+        conn = user.__connectdb()
+        try:
+            # 使用 cursor() 方法创建一个游标对象 cursor
+            cursor = conn.cursor()
+            #表不存在才创建
+            sql = """CREATE TABLE  IF NOT EXISTS USER(
+                     USER_NUMBER  VARCHAR(20) NOT NULL,
+                     USER_PASSWORD  VARCHAR(20) )"""
+            cursor.execute(sql)
+        except Exception:print("创建数据表失败！")
+        # 关闭数据库连接
+        finally:
+            conn.close()
+
     # 创建数据表
+    @staticmethod
     def createUserTable():
         conn = user.__connectdb()
         try:

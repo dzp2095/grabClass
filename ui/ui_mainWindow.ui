@@ -583,7 +583,7 @@
                  <string notr="true">color:rgb(255, 0, 0)</string>
                 </property>
                 <property name="text">
-                 <string>使用查询功能请确保数据库安装正确，具体信息点击“关于”查看帮助信息</string>
+                 <string>提示:1.初次使用请点击左上角初始化数据库 2.如果有重复课程或者学期更换，请点击左上角重新建立课程数据表</string>
                 </property>
                </widget>
               </item>
@@ -1073,8 +1073,10 @@
    </widget>
    <widget class="QMenu" name="menu">
     <property name="title">
-     <string>设置</string>
+     <string>数据库操作</string>
     </property>
+    <addaction name="actionInitDatabase"/>
+    <addaction name="separator"/>
     <addaction name="actionDeleteAllUsersData"/>
     <addaction name="separator"/>
     <addaction name="actionDeleteLessonData"/>
@@ -1137,12 +1139,17 @@
   </action>
   <action name="actionDeleteAllUsersData">
    <property name="text">
-    <string>建立用户数据表</string>
+    <string>重新建立用户数据表</string>
    </property>
   </action>
   <action name="actionDeleteLessonData">
    <property name="text">
-    <string>建立课程数据表</string>
+    <string>重新建立课程数据表</string>
+   </property>
+  </action>
+  <action name="actionInitDatabase">
+   <property name="text">
+    <string>初始化数据库</string>
    </property>
   </action>
  </widget>
