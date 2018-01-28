@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1483</width>
-    <height>1349</height>
+    <width>1026</width>
+    <height>885</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -36,7 +36,7 @@
          </size>
         </property>
         <property name="text">
-         <string>0121510870514</string>
+         <string/>
         </property>
         <property name="placeholderText">
          <string/>
@@ -59,7 +59,7 @@
          </size>
         </property>
         <property name="text">
-         <string>15420581150109</string>
+         <string/>
         </property>
        </widget>
       </item>
@@ -585,6 +585,9 @@
                 <property name="text">
                  <string>提示:1.初次使用请点击左上角初始化数据库 2.如果有重复课程或者学期更换，请点击左上角重新建立课程数据表</string>
                 </property>
+                <property name="wordWrap">
+                 <bool>true</bool>
+                </property>
                </widget>
               </item>
               <item>
@@ -1061,7 +1064,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1483</width>
+     <width>1026</width>
      <height>30</height>
     </rect>
    </property>
